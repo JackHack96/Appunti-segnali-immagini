@@ -8,7 +8,7 @@
 \usepackage{amssymb}
 \usepackage{mathtools}
 \usepackage{tikz}
-\usetikzlibrary{arrows}
+\usetikzlibrary{arrows,calc,patterns,angles,quotes}
 \usepackage{pgfplots}
 \usepgfplotslibrary{fillbetween}
 
@@ -463,6 +463,7 @@ Possono esistere segnali per i quali né l'energia né la potenza sono finiti. T
 	\int_{-\infty}^{+\infty}\delta(t)dt=1
 	\end{align*}
 \end{itemize}
+\subsection{Proprietà dell'impulso unitario}
 Di seguito elenchiamo alcune delle proprietà fondamentali della funzione \textit{impulso unitario}.
 \begin{itemize}
 	\item Moltiplicazione di una funzione per l'impulso
@@ -517,7 +518,7 @@ Elenchiamo di seguito alcune proprietà dei sistemi lineari:
 	$a_{1} \cdot f_{1} + a_{2}\cdot f_{2} \rightarrow a_{1}\cdot y_{1}+a_{2}\cdot y_{2}$
 \end{itemize}
 
-\subsection{Risposta libera e risposta forzata}
+\subsection{Caratteristiche generali}
 La \textbf{risposta libera} di un sistema è la sua risposta quando l'ingresso è nullo.
 L'output di un sistema per $t\geq0$ è il risultato di due cause indipendenti: le \textbf{condizioni iniziali} del sistema al tempo $t=0$ e l'\textbf{input} $f(t)$ per $t\geq0$.
 Grazie alla \textit{linearità} la risposta totale del sistema è la \textbf{somma} della risposta libera e della risposta forzata.
@@ -666,14 +667,88 @@ L'integrale di convoluzione gode delle seguenti proprietà:
 	$\Rightarrow f_1(t-T_1)\cdot f_2(t-T_2)=c(t-T_1-T_2)$
 	\item \textbf{Moltiplicazione con l'impulso}:\\
 	$f(t)\cdot \delta(t)=f(t)$
-	\item \textbf{Proprietà della lunghezza}:\\
-	se le lunghezze di $f_1(t)$ e $f_2(t)$ sono rispettivamente $T_1$ e $T_2$
-	allora la lunghezza di $f_1(t)\cdot f_2(t)=T_1+T_2$.
+	\item \textbf{Proprietà della durata}:\\
+	se le durate di $f_1(t)$ e $f_2(t)$ sono rispettivamente $T_1$ e $T_2$
+	allora la durate di $f_1(t)\cdot f_2(t)=T_1+T_2$.
 \end{itemize}
 La risposta in uscita del sistema \ref{eqn:sistema} inizialmente a riposo, di risposta impulsiva $h(t)$, $t\in\mathbb{R}$ in corrispondenza ad un segnale di ingresso
 $u(t)$, $t\in\mathbb{R}$ se esiste è espressa nella forma:
 \begin{equation*}
 	v(t)=[h*u](t)=\int_{0^-}^{+\infty}h(\tau)u(t-\tau)d\tau=\int_{-\infty}^{t^+}h(t-\tau)u(\tau)d\tau.
 \end{equation*}
+
+\chapter{Analisi di Fourier}
+Possiamo considerare i segnali come dei \textbf{vettori}, per i quali quindi valgono le normali \textbf{operazioni vettoriali}.
+Richiamiamo alcune definizioni:
+\begin{itemize}
+	\item La \textbf{componente} di un vettore è la proiezione di un vettore su un altro.
+	\item Dati 2 vettori $f$ ed $x$, definiamo il \textbf{prodotto scalare} $f \cdot x = |f||x| \cos\theta$.
+	\item Dalla definizione di prodotto scalare definiamo la \textbf{norma} di $f$ come il prodotto scalare di $f$ con se stesso $f^2=f\cdot f$.
+	\item La \textbf{proiezione ortogonale} di un vettore su un altro corrisponde al prodotto scalare dei due vettori
+\end{itemize}
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}
+		% draw the axis
+		\draw [->] (0,0) -- (5,0) node[below](x){$x$};
+		\draw [->] (0,0) -- (0,4) node[left](y){$y$};
+		
+		\draw [thick, ->] (0,0) node(o){} -- (3,3) node[above](f){$f$};
+		\draw [thick, ->, green] (0,0) -- (3,0) node[below]{$cx$};
+		\draw [dashed] (3,3) -- (3,0);
+		\draw [thick, ->, red] (0,0) -- (0,3) node[left](e){$e$};
+		\draw [dashed] (0,3) -- (3,3);
+		\pic [draw, ->, "$\theta$", angle eccentricity=1.5] {angle = x--o--f};
+	\end{tikzpicture}
+\end{figure}
+La proiezione ortogonale di un vettore $f$ su un vettore $x$ approssima $f$ con la sua componente lungo $x$. Il concetto di componente vettoriale e ortogonalità può
+essere esteso ai segnali. Notiamo che
+\begin{equation*}
+	f(t) \simeq cx(t) \qquad \text{ con } t \in [t_1,t_2]
+\end{equation*}
+e l'errore $e$ di questa approssimazione è:
+\begin{align*}
+	e(t)=
+		\begin{cases}
+			f(t)-cx(t) \quad &t_1 \leq t \leq t_2\\
+			0 \quad &\text{altrimenti}
+		\end{cases}
+\end{align*}
+
+\section{Correlazione incrociata}
+La \textbf{correlazione incrociata} rappresenta la misura di similitudine di due segnali come funzione di uno spostamento o traslazione temporale applicata ad uno di essi.
+
+Considerando due segnali a valori reali $x$ e $y$ che differiscono solamente per uno spostamento sull'asse $t$, si può calcolare la correlazione incrociata per mostrare
+di quanto $y$ deve essere anticipato per renderlo identico ad $x$. La formula essenzialmente anticipa il segnale $y$ lungo l'asse $t$, calcolando l'integrale del prodotto
+per ogni possibile valore dello spostamento. Quando i due segnali coincidono, il valore di $(x*y)$ è massimizzato, poiché quando le forme d'onda sono allineate, esse
+contribuiscono solo positivamente al computo dell'area.
+
+Discorso simile per i segnali complessi, considerando due complessi $x$ e $y$, prendere il coniugato di $x$ assicura che le forme d'onda allineate con componenti
+immaginarie contribuiscano positivamente al computo dell'integrale.
+
+Per due segnali di \textit{energia finita} $x$ ed $y$ la correlazione incrociata è definita come:
+\begin{equation}
+	R_{xy}(t)=(x*y)(t) = \int_{-\infty}^{+\infty}x^*(\tau)y(t+\tau)d\tau
+	\label{eqn:correlazione_incrociata}
+\end{equation}
+dove $x^*$ indica il \textit{complesso coniugato} di $x$.
+La correlazione incrociata è simile alla convoluzione (\ref{eqn:integrale_convoluzione}) tra due segnali, ma a differenza di quest'ultima, che comporta l'inversione
+temporale di un segnale, il suo spostamento ed il prodotto per un altro segnale, la correlazione comporta solamente lo spostamento ed il prodotto.
+
+\subsection{Autocorrelazione}
+Un'\textbf{autocorrelazione} è la correlazione incrociata di un segnale con se stesso. Per un segnale di \textit{energia finita} $x$ l'autocorrelazione è definita come:
+\begin{equation}
+	R_x(t)=\int_{-\infty}^{\infty}x^*(\tau)x(t+\tau)d\tau
+	\label{eqn:autocorrelazione}
+\end{equation}
+
+\section{Serie di Fourier}
+La \textbf{serie di Fourier} è una rappresentazione di una \textit{funzione periodica} mediante una combinazione lineare di funzioni sinusoidali.
+In generale, un \textit{polinomio trigonometrico} è una funzione periodica di periodo $2\pi$ definita sul campo reale del tipo:
+\begin{equation}
+	f(t)=\frac{a_0}{2}+\sum_{n=1}^{N}[a_n \cos(nt)+b_n\sin(nt)]=\sum_{n=-N}^{N}c_ne^{int}
+	\label{eqn:serie_fourier}
+\end{equation}
+dove $a_n$ e $b_n$ sono numeri reali, $c_n$ complessi e $n$ è intero.
 
 \end{document}
