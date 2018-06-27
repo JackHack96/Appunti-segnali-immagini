@@ -571,7 +571,7 @@ Ricordiamo che trattandosi di sistemi lineari, valgono le proprietà di \textit{
 
 Un sistema lineare tempo invariante (LTI) può essere descritto da un'equazione differenziale:
 \begin{equation*}
-	a_n\frac{d^nv(t)}{dt^n} + \ldots + a_1\frac{dv(t)}{dt} + a_0v(t) = b_m\frac{d^mu(t)}{dt^m} + \ldots + b_1\frac{du(t)}{dt} + b_0u(t)
+	\frac{d^nv(t)}{dt^n} + \ldots + a_1\frac{dv(t)}{dt} + a_0v(t) = b_m\frac{d^mu(t)}{dt^m} + \ldots + b_1\frac{du(t)}{dt} + b_0u(t)
 \end{equation*}
 in forma compatta
 \begin{equation}
@@ -840,10 +840,64 @@ Proseguiamo con un procedimento simile per trovare l'espressione che calcola $b_
 \end{equation*}
 Adesso che abbiamo tutto il necessario, possiamo procedere con il calcolo della serie di Fourier per la nostra funzione onda quadra:
 \begin{align*}
-	a_0=\frac{1}{2\pi}\left(\int_{0}^{\pi}3dt+\int_{\pi}^{2\pi}0dt\right)=\frac{3}{2}\\
-	a_n=\frac{3}{n\pi}\int_{0}^{\pi}n\cos(nt)dt=0\\
-	b_n=-\frac{3}{n\pi}\int_{0}^{\pi}-n\sin(nt)dt=-\frac{3}{n\pi}
+	a_0=&\frac{1}{2\pi}\left(\int_{0}^{\pi}3dt+\int_{\pi}^{2\pi}0dt\right)=\frac{3}{2}\\
+	a_n=&\frac{3}{n\pi}\int_{0}^{\pi}n\cos(nt)dt=0\\
+	b_n=&-\frac{3}{n\pi}\int_{0}^{\pi}-n\sin(nt)dt=-\frac{3}{n\pi}(\cos(n\pi)-1)
 \end{align*}
+Proviamo a calcolare la nostra approssimazione fino al quinto termine $b_n$:
+\begin{equation*}
+	f(t)=\frac{3}{2}+\frac{6}{\pi}\sin(t)+\frac{6}{3\pi}\sin(3t)+\frac{6}{5\pi}\sin(5t)
+\end{equation*}
+Ed ecco una rappresentazione della nostra approssimazione, che è già buona per la nostra onda quadra.
+\begin{figure*}[h]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}[
+			scale only axis,
+			height=5cm,
+			width=9cm,
+			axis lines=left,
+			xlabel=Tempo,
+			ylabel=Ampiezza,
+			trig format plots=rad,
+		]
+		\addplot[
+			domain=0:8*pi,
+			samples=360,
+			color=blue,
+			line width=1.25pt,
+		]{(3/2)+
+			(6/pi)*(sin(x))+
+			(6/(3*pi))*(sin(3*x))+
+			(6/(5*pi))*(sin(5*x))};
+		\end{axis}
+	\end{tikzpicture}
+\end{figure*}
 
+
+\section{Trasformata di Fourier}
+La trasformata di Fourier permette di scrivere una funzione dipendente dal tempo nel dominio delle frequenze, decomponendo  la funzione nella base delle funzioni 
+esponenziali con un prodotto scalare. Questa rappresentazione viene chiamata spesso \textbf{spettro} della funzione. La trasformata di Fourier è invertibile, grazie
+al teorema di inversione di Fourier.
+
+Se il segnale in oggetto è un \textit{segnale periodico}, la sua trasformazione di Fourier è un insieme discreto di valori, che in tal caso prende il nome di
+\textit{spettro discreto}: la frequenza più bassa è detta \textit{armonica fondamentale} ed è quella che ha peso maggiore nella ricomposizione finale del segnale,
+mentre le altre frequenze sono multiple della fondamentale e prendono talvolta il nome di \textit{armoniche secondarie}. In quel caso la rispettiva formula inversa
+costituisce lo sviluppo in serie di Fourier della funzione. Se il segnale ha anche un \textit{valor medio} diverso da zero, la serie restituisce una componente costante
+che lo rappresenta.
+
+Nel caso in cui la funzione sia \textit{non periodica}, lo spettro è continuo, e tanto più è esteso lungo l'asse delle frequenze quanto più è limitato
+nel dominio originario della variabile indipendente, e viceversa. La teoria della trasformata e antitrasformata di Fourier generalizza dunque la teoria 
+della Serie di Fourier al caso di segnali non periodici, ricomprendendo i segnali periodici come caso particolare ed insieme confluiscono nell'analisi di 
+Fourier e nell'analisi armonica.
+
+\textbf{TODO}
+
+%TODO:
+% Trasformazione da dominio del tempo a dominio delle frequenze:
+% Ad esempio segnale costante diventa un impulso in zero
+% Oppure il coseno diventa due impulsi
+
+% Per andare poi da segnale aperiodico a segnale periodico uso la modulazione con treno di impulsi
 
 \end{document}
